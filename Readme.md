@@ -1,9 +1,9 @@
 
 # char-dna
 
-adapted from kapathy's char-rnn
+Code is adapted from kapathy's char-rnn. 
 
-## Requirements
+## installation
 
 This code is written in Lua and requires [Torch](http://torch.ch/). If you're on Ubuntu, installing Torch in your home directory may look something like: 
 
@@ -42,11 +42,14 @@ luarocks install clnn
 
 ### use precalculated model
 
+precalculated model was trained on 500 randomly selected full plasmid sequences (NCBI 2015 dump) on a Tesla K80 with RNN size 800 and sequence length of 150. Using this model you can predict the sequence similarity to the trained model using the `check.lua` script. This will ourput a .json formatted file of the probability for every character in your sequences. Because the model was trained on plasmid sequences only, this should give you a per-nucleotide probability that the input sequences follows the structure of the trained plasmid sequences. 
+
+
 ```bash
 th check.lua cv/epoch4.65_cpu.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" > test.json
 ```
 
-and open the `index.html`
+to visualize the results, open `index.html` 
 
 
 ### Data
