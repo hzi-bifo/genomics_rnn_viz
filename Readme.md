@@ -3,11 +3,11 @@
 
 ## Usage
 
-### use pretrained model to predict plasmid probability
+### predict plasmid probability
 
 precalculated model was trained on 500 randomly selected full plasmid sequences (NCBI 2015 dump) on a Tesla K80 with RNN size 800 and sequence length of 150. Using this model you can predict the sequence similarity to the trained model using the `check.lua` script. This will ourput a .json formatted file of the probability for every character in your sequences. Because the model was trained on plasmid sequences only, this should give you a per-nucleotide probability that the input sequences follows the structure of the trained plasmid sequences. 
 
-get the [lastest precalculated model](https://www.dropbox.com/s/rudzw859qxcl4wq/model.t7?dl=1)
+get the [lastest precalculated model](https://www.dropbox.com/s/fwty30auk82155b/lm_lstm_epoch19.08_1.2870.t7_cpu.t7?dl=1) and the [gpu model](https://www.dropbox.com/s/504uihdc936p09y/lm_lstm_epoch19.08_1.2870.t7?dl=1)
 
 ```bash
 th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" > sequence.json
@@ -23,6 +23,23 @@ to get the overall probability of the input sequence you can use
 th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" -overall 1 -log 1
 > Mean sample log probability: -3.351086258032	
 ```
+
+
+### predict CRISPR spacer
+
+we learned a LSTM model on 10000 syntetic generated CRISPR spacer sequences (script available at https://gist.github.com/philippmuench/07a0f52fcbb682b4ce1776c8dd9a865b) using a sequence length of 50 and a network size of 128 hidden neurones. Even after 30 minutes of training the model can succesfully find palindromic spacer sequences in new generated sequences. 
+
+You can download the [lastest precalculated model for CRISPR prediction](https://www.dropbox.com/s/2e6px4ergyenrb7/crispr_cpu.t7?dl=1) and the [GPU model](https://www.dropbox.com/s/ikqryoreblfu6zc/crispr.t7?dl=1)
+
+```
+ th check.lua crispr_cpu.t7 -sequence "CGTGATAGCAGGACTCCTCGTTGTGTGCCTTGCTAGTCGTATAACTAAGCCAGGCCGGACCGAATCAATATGCTGATCGTTCCGTGTGTTGCTCCTCAGGACGATAGTGCCCCGTCATGGAGCTCGCCGCTCGAGGTACTGCCCTGGTATCCGTTCTTTCGCACATAATTAAAGCTCTATGAACCCGTCATGGAGCTCGCCGCTCGAGGTACTGCCCGGTCGATCCTTCCGAAGTTAAGCACATGACGGCTTCCCCGTCATGGAGCTCGCCGCTCGAGGTACTGCCCCATGGGTTGGGGCCCTAAGGAAAAGAGACGCCTATTGTCACGTACATAAGCTTGGCGCATTAGTAGAATAGCCCAGTCCTGGATGGTAGGTCCTGACCCGATAAGATGATTACGCGGTTCGAATACATGCACTGTTA" > sequence.json
+
+```
+
+![ScreenShot](crispr.png)
+
+This is a synthetic CRISPR sequence with the CRISPR spacer of `CCCGTCATGGAGCTCGCCGCTCGAGGTACTGCCC`. You can see a high confidence of model at the spacer sequence
+
 
 ## installation
 
