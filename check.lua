@@ -29,6 +29,7 @@ cmd:option('-length',0,'number of characters to sample')
 cmd:option('-temperature',1,'temperature of sampling')
 cmd:option('-gpuid',0,'which gpu to use. -1 = use CPU')
 cmd:option('-opencl',0,'use OpenCL (instead of CUDA)')
+cmd:option('-overall',0,'output overall mean log probability only')
 cmd:option('-verbose',1,'set to 0 to ONLY print the sampled text, no diagnostics')
 cmd:text()
 
@@ -181,15 +182,13 @@ for i=1, opt.length do
     io.write(ivocab[prev_char[1]])
 end
 
-
-local out_txt = {
-    { pca=probs},
-    { seq=seed_text},
-}
-
-
-local serializedJSON = json.encode( out_txt )
-print( serializedJSON )
- 
--- print(probs)
--- gprint('Mean sample log probability: ' .. sample_log_prob/string.len(seed_text))
+if opt.overall == 1 then
+	gprint('Mean sample log probability: ' .. sample_log_prob/string.len(seed_text))
+else
+	local out_txt = {
+	    { pca=probs},
+	    { seq=seed_text},
+	}
+	local serializedJSON = json.encode( out_txt )
+	print( serializedJSON )
+end

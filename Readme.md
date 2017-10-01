@@ -14,16 +14,23 @@ th check.lua cv/epoch4.65_cpu.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCT
 
 to visualize the results, open `index.html` 
 
+to get the overall probability of the input sequence you can use
+
+```bash
+th check.lua cv/epoch5.t7 -primetext "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" -overall 1
+> Mean sample log probability: -3.351086258032	
+```
+
 ## installation
 
 This code is written in Lua and requires [Torch](http://torch.ch/). If you're on Ubuntu, installing Torch in your home directory may look something like: 
 
 ```bash
-$ curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash
-$ git clone https://github.com/torch/distro.git ~/torch --recursive
-$ cd ~/torch; 
-$ ./install.sh      # and enter "yes" at the end to modify your bashrc
-$ source ~/.bashrc
+curl -s https://raw.githubusercontent.com/torch/ezinstall/master/install-deps | bash
+git clone https://github.com/torch/distro.git ~/torch --recursive
+cd ~/torch; 
+./install.sh      # and enter "yes" at the end to modify your bashrc
+source ~/.bashrc
 ```
 
 See the Torch installation documentation for more details. After Torch is installed we need to get a few more packages using [LuaRocks](https://luarocks.org/) (which already came with the Torch install). In particular:
