@@ -7,8 +7,7 @@
 
 precalculated model was trained on 500 randomly selected full plasmid sequences (NCBI 2015 dump) on a Tesla K80 with RNN size 800 and sequence length of 150. Using this model you can predict the sequence similarity to the trained model using the `check.lua` script. This will ourput a .json formatted file of the probability for every character in your sequences. Because the model was trained on plasmid sequences only, this should give you a per-nucleotide probability that the input sequences follows the structure of the trained plasmid sequences. 
 
-download the lastest [precalculated model)](https://www.dropbox.com/s/rudzw859qxcl4wq/model.t7?dl=1)
-
+get the [lastest precalculated model](https://www.dropbox.com/s/rudzw859qxcl4wq/model.t7?dl=1)
 
 ```bash
 th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" > test.json
@@ -21,7 +20,7 @@ to visualize the results, open `index.html`
 to get the overall probability of the input sequence you can use
 
 ```bash
-th check.lua model.t7 -primetext "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" -overall 1 -log 1
+th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" -overall 1 -log 1
 > Mean sample log probability: -3.351086258032	
 ```
 
