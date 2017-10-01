@@ -1,10 +1,9 @@
 
 # char-dna
 
-
 ## Usage
 
-### predict plasmid probability
+### use pretrained model to predict plasmid probability
 
 precalculated model was trained on 500 randomly selected full plasmid sequences (NCBI 2015 dump) on a Tesla K80 with RNN size 800 and sequence length of 150. Using this model you can predict the sequence similarity to the trained model using the `check.lua` script. This will ourput a .json formatted file of the probability for every character in your sequences. Because the model was trained on plasmid sequences only, this should give you a per-nucleotide probability that the input sequences follows the structure of the trained plasmid sequences. 
 
@@ -51,11 +50,9 @@ luarocks install clnn
 ```
 
 
-
 ## Acknowledgements
 
-Implementation based by @karpathy
-This code was originally based on Oxford University Machine Learning class [practical 6](https://github.com/oxford-cs-ml-2015/practical6), which is in turn based on [learning to execute](https://github.com/wojciechz/learning_to_execute) code from Wojciech Zaremba. Chunks of it were also developed in collaboration with my labmate [Justin Johnson](http://cs.stanford.edu/people/jcjohns/).
+Implementation based by karpathy. This code was originally based on Oxford University Machine Learning class [practical 6](https://github.com/oxford-cs-ml-2015/practical6), which is in turn based on [learning to execute](https://github.com/wojciechz/learning_to_execute) code from Wojciech Zaremba. Chunks of it were also developed in collaboration with my labmate [Justin Johnson](http://cs.stanford.edu/people/jcjohns/).
 
 ## License
 
