@@ -9,10 +9,10 @@ require 'nn'
 require 'nngraph'
 require 'optim'
 require 'lfs'
-
 require 'util.OneHot'
 require 'util.misc'
 require 'json'
+require 'math'
 
 cmd = torch.CmdLine()
 cmd:text()
@@ -24,13 +24,15 @@ cmd:argument('-model','model checkpoint to use for sampling')
 -- optional parameters
 cmd:option('-seed',123,'random number generator\'s seed')
 cmd:option('-sample',1,' 0 to use max at each timestep, 1 to sample at each timestep')
-cmd:option('-primetext',"",'used as a prompt to "seed" the state of the LSTM using a given sequence, before we sample.')
+cmd:option('-sequence',"",'used as a prompt to "seed" the state of the LSTM using a given sequence, before we sample.')
 cmd:option('-length',0,'number of characters to sample')
 cmd:option('-temperature',1,'temperature of sampling')
 cmd:option('-gpuid',0,'which gpu to use. -1 = use CPU')
 cmd:option('-opencl',0,'use OpenCL (instead of CUDA)')
 cmd:option('-overall',0,'output overall mean log probability only')
+cmd:option('-log',1,'output log of probability')
 cmd:option('-verbose',1,'set to 0 to ONLY print the sampled text, no diagnostics')
+
 cmd:text()
 
 -- parse input params
@@ -113,7 +115,7 @@ local i
 probs = {}
 
 -- do a few seeded timesteps
-local seed_text = opt.primetext
+local seed_text = opt.sequence
 if string.len(seed_text) > 0 then
     i = 1
     for c in seed_text:gmatch'.' do
@@ -128,11 +130,11 @@ if string.len(seed_text) > 0 then
         end
        -- io.write(ivocab[prev_char[1]])
        -- gprint(',' .. sample_log_prob - sample_log_prob_before)
-        
-      --  probs[i] = 
-        table.insert(probs, sample_log_prob - sample_log_prob_before)
-       -- i = i + 1
-
+        if opt.log == 0 then
+        	table.insert(probs, sample_log_prob - sample_log_prob_before)
+        else
+        	table.insert(probs, math.exp(sample_log_prob - sample_log_prob_before))
+        end
         if opt.gpuid >= 0 and opt.opencl == 0 then prev_char = prev_char:cuda() end
         if opt.gpuid >= 0 and opt.opencl == 1 then prev_char = prev_char:cl() end
         local lst = protos.rnn:forward{prev_char, unpack(current_state)}
@@ -183,7 +185,11 @@ for i=1, opt.length do
 end
 
 if opt.overall == 1 then
-	gprint('Mean sample log probability: ' .. sample_log_prob/string.len(seed_text))
+	if opt.log == 1 then
+		gprint('Mean sample probability: ' .. math.exp(sample_log_prob/string.len(seed_text)))
+	else
+		gprint('Mean sample log probability: ' .. sample_log_prob/string.len(seed_text))
+	end
 else
 	local out_txt = {
 	    { pca=probs},
