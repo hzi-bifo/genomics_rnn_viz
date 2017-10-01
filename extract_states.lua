@@ -123,9 +123,9 @@ if string.len(seed_text) > 0 then
         current_state = {}
         for i=1,state_size do table.insert(current_state, lst[i]) end
         prediction = lst[#lst] -- last element holds the log probabilities
-        
+        hidden = torch.totable(lst[2])
         -- add second tensor (hidden one?) to weiths table
-        table.insert(weights, torch.totable(lst[2]))
+        table.insert(weights, hidden[1])
 
         --print(type(tens1))
         pred_table = torch.totable(prediction)
@@ -168,11 +168,11 @@ for i=1, opt.length do
 end
 --io.write('\n') io.flush()
 
-
+--print(weights)
 
 local out_txt = {
 { pca=weights, seq=seed_text}
-    }
+}
 
 local serializedJSON = json.encode( out_txt )
 local serializedJSON_2 = serializedJSON:sub(2, -2)
