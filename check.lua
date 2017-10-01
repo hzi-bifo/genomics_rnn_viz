@@ -192,9 +192,9 @@ if opt.overall == 1 then
 	end
 else
 	local out_txt = {
-	    { pca=probs},
-	    { seq=seed_text},
+	    { pca=probs, seq=seed_text}
 	}
 	local serializedJSON = json.encode( out_txt )
-	print( serializedJSON )
+	local serializedJSON_2 = serializedJSON:sub(2, -2)
+	print( serializedJSON_2 )
 end
