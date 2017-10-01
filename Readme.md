@@ -20,9 +20,7 @@ th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACAC
 
 to visualize the results, open `index.html` 
 
-
-![sample output][sample.jpg]
-
+![ScreenShot](sample.jpg)
 
 to get the overall probability of the input sequence you can use
 
