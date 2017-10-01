@@ -52,7 +52,7 @@
   }
 
   function toColor4(v) { 
-    v = (v *10) * 205 + 50;
+    v = (v) * 205 + 50;
     if(v > 0) {
       var r = 255 - v;
       var g = 255 - v * 0.5;
@@ -152,10 +152,10 @@
   </head>
   <body onload="start();">
     <div id="wrap">
-      <button onclick="cycleb()" style="width:100px; height:50px;">Cycle Back</button>
-      <button onclick="cycle()" style="width:100px; height:50px;">Cycle</button>
+      <button onclick="cycleb()" style="width:100px; height:50px;">prev. neuron</button>
+      <button onclick="cycle()" style="width:100px; height:50px;">next neuron</button>
       <button onclick="showmorebtn()" style="width:100px; height:50px;">ShowMore</button>
-      <button onclick="shownextbtn()" style="width:100px; height:50px;">ShowLessContinue</button>
+      <button onclick="shownextbtn()" style="width:100px; height:50px;">ShowLess</button>
       <div id="vis">
         hi
       </div>
