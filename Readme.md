@@ -10,7 +10,7 @@ precalculated model was trained on 500 randomly selected full plasmid sequences 
 get the [lastest precalculated model](https://www.dropbox.com/s/rudzw859qxcl4wq/model.t7?dl=1)
 
 ```bash
-th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" > test.json
+th check.lua model.t7 -sequence "AAACACAGTGGTGGTTACATCTATGTGATTGCCCCTAATCCATACACAAAAAGCCGTATC" > sequence.json
 ```
 
 to visualize the results, open `index.html` 
