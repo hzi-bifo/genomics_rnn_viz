@@ -16,6 +16,8 @@ require 'lfs'
 require 'json'
 require 'util.OneHot'
 require 'util.misc'
+require 'io'
+
 
 cmd = torch.CmdLine()
 cmd:text()
@@ -27,16 +29,40 @@ cmd:argument('-model','model checkpoint to use for sampling')
 -- optional parameters
 cmd:option('-seed',123,'random number generator\'s seed')
 cmd:option('-sample',1,' 0 to use max at each timestep, 1 to sample at each timestep')
-cmd:option('-primetext',"",'used as a prompt to "seed" the state of the LSTM using a given sequence, before we sample.')
-cmd:option('-length',2000,'number of characters to sample')
+cmd:option('-sequence',"",'used as a prompt to "seed" the state of the LSTM using a given sequence, before we sample.')
+cmd:option('-length',0,'number of characters to sample')
 cmd:option('-temperature',1,'temperature of sampling')
 cmd:option('-gpuid',0,'which gpu to use. -1 = use CPU')
 cmd:option('-opencl',0,'use OpenCL (instead of CUDA)')
-cmd:option('-verbose',1,'set to 0 to ONLY print the sampled text, no diagnostics')
+cmd:option('-table',0,'print output in table format')
+cmd:option('-fromfile',1,'read input sequence from file')
+cmd:option('-filename','sequence.txt')
+cmd:option('-outfile', 'output file')
+cmd:option('-verbose',0,'set to 0 to ONLY print the sampled text, no diagnostics')
 cmd:text()
 
 -- parse input params
 opt = cmd:parse(arg)
+
+if opt.fromfile == 1 then
+    local open = io.open
+    local function read_file(path)
+        local file = open(path, "rb") -- r read mode and b binary mode
+        if not file then return nil end
+        local content = file:read "*a" -- *a or *all reads the whole file
+        file:close()
+        return content
+    end
+    local fileContent = read_file(opt.filename);
+    opt.sequence = fileContent
+end
+
+
+if opt.outfile == 1 then
+	file = io.open(opt.outfile, "a")
+	-- sets the default output file
+	io.output(file)
+end
 
 -- gated print: simple utility function wrapping a print
 function gprint(str)
@@ -108,14 +134,15 @@ for L = 1,checkpoint.opt.num_layers do
 end
 state_size = #current_state
 local weights = {}
--- do a few seeded timesteps
-local seed_text = opt.primetext
+local i = 1
+-- do a few seeded 
+local seed_text = opt.sequence
 if string.len(seed_text) > 0 then
     gprint('seeding with ' .. seed_text)
     gprint('--------------------------')
     for c in seed_text:gmatch'.' do
         prev_char = torch.Tensor{vocab[c]}
-      --  io.write(ivocab[prev_char[1]])
+        
         if opt.gpuid >= 0 and opt.opencl == 0 then prev_char = prev_char:cuda() end
         if opt.gpuid >= 0 and opt.opencl == 1 then prev_char = prev_char:cl() end
         local lst = protos.rnn:forward{prev_char, unpack(current_state)}
@@ -123,7 +150,7 @@ if string.len(seed_text) > 0 then
         current_state = {}
         for i=1,state_size do table.insert(current_state, lst[i]) end
         prediction = lst[#lst] -- last element holds the log probabilities
-        hidden = torch.totable(lst[2])
+        hidden = torch.totable(lst[1])
         -- add second tensor (hidden one?) to weiths table
         table.insert(weights, hidden[1])
 
@@ -131,6 +158,16 @@ if string.len(seed_text) > 0 then
         pred_table = torch.totable(prediction)
         --print(pred_table)
         table.insert(pred_table, prediction)
+
+        -- write to file
+        if opt.table == 1 then
+            for neurones = 1, 100 do --extract first 100 neurones
+                io.write(neurones .. " " .. opt.filename .. " " .. i  .. " " .. i+1  .. " ")
+                io.write(hidden[1][neurones] .. '\n')
+            end
+        end
+
+        i = i + 1
     end
 else
     -- fill with uniform probabilities over characters (? hmm)
@@ -176,4 +213,10 @@ local out_txt = {
 
 local serializedJSON = json.encode( out_txt )
 local serializedJSON_2 = serializedJSON:sub(2, -2)
-print( serializedJSON_2 )
+if opt.table == 0 then
+    print( serializedJSON_2 )
+end
+
+if opt.outfile == 1 then
+	io.close(file)
+end

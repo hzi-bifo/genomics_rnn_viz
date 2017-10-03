@@ -31,12 +31,30 @@ cmd:option('-gpuid',0,'which gpu to use. -1 = use CPU')
 cmd:option('-opencl',0,'use OpenCL (instead of CUDA)')
 cmd:option('-overall',0,'output overall mean log probability only')
 cmd:option('-log',1,'output log of probability')
+cmd:option('-fromfile',1,'read input sequence from file')
+cmd:option('-filename','sequence.txt')
 cmd:option('-verbose',1,'set to 0 to ONLY print the sampled text, no diagnostics')
 
 cmd:text()
 
 -- parse input params
 opt = cmd:parse(arg)
+
+
+if opt.fromfile == 1 then
+    local open = io.open
+    local function read_file(path)
+        local file = open(path, "rb") -- r read mode and b binary mode
+        if not file then return nil end
+        local content = file:read "*a" -- *a or *all reads the whole file
+        file:close()
+        return content
+    end
+    local fileContent = read_file(opt.filename);
+    opt.sequence = fileContent
+end
+
+
 
 -- gated print: simple utility function wrapping a print
 function gprint(str)
